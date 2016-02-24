@@ -58,6 +58,9 @@ type HTTP struct {
 	// Clock allows for testing timing related functionality. Do not specify this
 	// in production code.
 	Clock clock.Clock
+
+	// CloseChannel
+	CloseChannel chan struct{}
 }
 
 // Serve provides the low-level API which is useful if you're creating your own
@@ -368,6 +371,15 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 	case s := <-signals:
 		signal.Stop(signals)
 		log.Printf("signal received: %s\n", s)
+		if err := hs.Stop(); err != nil {
+			return err
+		}
+		if err := <-waiterr; err != nil {
+			return err
+		}
+	case <-hd.CloseChannel:
+		close(hd.CloseChannel)
+		log.Printf("close signal received: %s\n", s)
 		if err := hs.Stop(); err != nil {
 			return err
 		}
