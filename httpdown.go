@@ -5,7 +5,6 @@ package httpdown
 import (
 	"crypto/tls"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -16,6 +15,7 @@ import (
 
 	"github.com/facebookgo/clock"
 	"github.com/facebookgo/stats"
+	"github.com/segmentio/kit/log"
 )
 
 const (
@@ -352,7 +352,7 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("serving on http://%s/ with pid %d\n", s.Addr, os.Getpid())
+	log.Infof("Serving on http://%s/ with pid %d", s.Addr, os.Getpid())
 
 	waiterr := make(chan error, 1)
 	go func() {
@@ -370,7 +370,7 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 		}
 	case s := <-signals:
 		signal.Stop(signals)
-		log.Printf("signal received: %s\n", s)
+		log.Infof("Signal received: %s", s)
 		if err := hs.Stop(); err != nil {
 			return err
 		}
@@ -379,7 +379,7 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 		}
 	case <-hd.CloseChannel:
 		close(hd.CloseChannel)
-		log.Printf("close signal received: %s\n", s)
+		log.Infof("Close signal received: %s", s)
 		if err := hs.Stop(); err != nil {
 			return err
 		}
@@ -387,6 +387,6 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 			return err
 		}
 	}
-	log.Println("exiting")
+	log.Info("Exiting")
 	return nil
 }
