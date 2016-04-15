@@ -352,7 +352,7 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 	if err != nil {
 		return err
 	}
-	log.Infof("Serving on http://%s/ with pid %d", s.Addr, os.Getpid())
+	log.Debugf("Serving on http://%s/ with pid %d", s.Addr, os.Getpid())
 
 	waiterr := make(chan error, 1)
 	go func() {
@@ -370,7 +370,7 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 		}
 	case s := <-signals:
 		signal.Stop(signals)
-		log.Infof("Signal received: %s", s)
+		log.Debugf("Signal received: %s", s)
 		if err := hs.Stop(); err != nil {
 			return err
 		}
@@ -379,7 +379,7 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 		}
 	case <-hd.CloseChannel:
 		close(hd.CloseChannel)
-		log.Infof("Close signal received: %s", s)
+		log.Debugf("Close signal received: %s", s)
 		if err := hs.Stop(); err != nil {
 			return err
 		}
@@ -387,6 +387,6 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 			return err
 		}
 	}
-	log.Info("Exiting")
+	log.Debug("Exiting")
 	return nil
 }
